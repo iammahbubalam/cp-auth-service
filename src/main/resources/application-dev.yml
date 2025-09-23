@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: cp-auth-service
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/auth_db
+    username: iammahbubalam
+    password: i@mm@h8u8@1@m
+
+  data:
+    redis:
+      password: i@mm@hbub@l@m
+      host: localhost
+      port: 6379
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework.r2dbc: DEBUG

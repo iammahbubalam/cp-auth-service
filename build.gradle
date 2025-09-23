@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco' // For code coverage
+    id "com.google.protobuf" version "0.9.4"
 }
 
 group = 'com.iammahbubalam'
@@ -12,11 +13,11 @@ description = 'Reactive gRPC Authentication service for Problem Solving Platform
 ext {
     springBootVersion            = '3.5.6'
     grpcSpringBootStarterVersion = '3.1.0.RELEASE'
-    protobufVersion              = '3.25.1'
-    grpcVersion                  = '1.58.0'
-    jjwtVersion                  = '0.11.5'
+    protobufVersion              = '4.28.2'
+    grpcVersion                  = '1.64.0'
+    jjwtVersion                  = '0.12.5'
     auth0JwtVersion              = '4.4.0'
-    resilience4jVersion          = '2.1.0'
+    resilience4jVersion          = '2.2.0'
 }
 
 java {
@@ -53,6 +54,10 @@ dependencies {
 
     // gRPC support
     implementation "net.devh:grpc-spring-boot-starter:${grpcSpringBootStarterVersion}"
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
 
     // Database & Migration
     implementation 'org.flywaydb:flyway-core'
@@ -74,8 +79,6 @@ dependencies {
     // Additional JWT library (for RS256 and advanced algorithms)
     implementation "com.auth0:java-jwt:${auth0JwtVersion}"
 
-    // ⚠️ Removed Spring Security — Auth implemented manually
-    // implementation 'org.springframework.security:spring-security-crypto'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -109,7 +112,6 @@ springBoot {
 }
 
 bootJar {
-    // ✅ Fixed layered JAR usage
     layered {
         enabled = true
     }
@@ -118,6 +120,7 @@ bootJar {
 jacoco {
     toolVersion = "0.8.10"
 }
+
 
 tasks.jacocoTestReport {
     dependsOn tasks.test
