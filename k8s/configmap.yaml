@@ -1,0 +1,4 @@
+Purpose: Stores non-sensitive configuration data (like app settings, URLs, feature flags) for your service.
+What it does:
+  Allows you to inject configuration into your pods as environment variables or mounted files.
+  Keeps config separate from your container image.

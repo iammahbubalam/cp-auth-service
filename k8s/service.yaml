@@ -1,0 +1,4 @@
+Purpose: Exposes your auth service to other services or external clients within the Kubernetes cluster.
+What it does:
+  Defines a Kubernetes Service resource, mapping a stable DNS name and port to your pods.
+  Can be ClusterIP (internal), NodePort, or LoadBalancer (external access).

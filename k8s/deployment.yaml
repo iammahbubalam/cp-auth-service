@@ -1,0 +1,4 @@
+Purpose: Defines how your auth service application is deployed on Kubernetes.
+What it does:
+  Specifies the Docker image to use, number of replicas, resource limits, environment variables, and how the app should start.
+  Handles rolling updates and pod management.
