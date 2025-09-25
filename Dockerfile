@@ -1,26 +1,46 @@
-FROM gradle:8.7.0-jdk21-alpine AS builder
+# Dockerfile
+# Stage args allow easy pinning/upgrades
+ARG GRADLE_IMAGE=gradle:9.1.0-jdk21
+ARG RUNTIME_IMAGE=eclipse-temurin:21-jre
 
+FROM ${GRADLE_IMAGE} AS builder
 WORKDIR /app
-COPY build.gradle settings.gradle ./
+
+# Copy gradle wrapper and build files first to leverage cache
+COPY build.gradle settings.gradle gradle.properties* gradlew ./
 COPY gradle ./gradle
+
+# Ensure wrapper is executable and download dependencies (if wrapper exists)
+RUN if [ -f ./gradlew ]; then chmod +x ./gradlew && ./gradlew --no-daemon --version; fi
+
+# Copy source and build the fat jar (Spring Boot)
 COPY src ./src
+RUN if [ -f ./gradlew ]; then ./gradlew clean bootJar -x test --no-daemon; else gradle clean bootJar -x test; fi
 
-RUN gradle clean bootJar -x test
+# Final runtime image (glibc-based for best compatibility)
+FROM ${RUNTIME_IMAGE} AS runtime
 
-FROM eclipse-temurin:21-jre-alpine
-
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
+# create non-root user
+RUN addgroup --system --gid 1001 appgroup && \
+    adduser --system --uid 1001 --gid 1001 appuser
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+# Copy the jar from builder (use explicit path or ARG if needed)
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/*.jar /app/app.jar
 
-EXPOSE 8080 9090
+# Install curl for healthcheck and then clean apt lists (Debian-based Temurin)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD nc -z localhost 8080 && nc -z localhost 9090 || exit 1
+EXPOSE 8080
+
+# Simple healthcheck hitting actuator; replace path if needed
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 USER appuser
 
-ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
+# JVM flags tuned for container environments; adjust memory flags as needed
+ENTRYPOINT ["java","-XX:+UseContainerSupport","-XX:MaxRAMPercentage=75.0","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]

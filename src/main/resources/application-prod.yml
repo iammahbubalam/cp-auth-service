@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: cp-auth-service
+
+  r2dbc:
+    url: ${SPRING_R2DBC_URL}
+    username: ${SPRING_R2DBC_USERNAME}
+    password: ${SPRING_R2DBC_PASSWORD}
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      password: ${SPRING_REDIS_PASSWORD}
+      port: ${SPRING_REDIS_PORT:6379}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+#  server:
+#    port: ${MANAGEMENT_PORT:8081}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  security:
+    enabled: true
+
+logging:
+  level:
+    root: WARN
+    org.springframework.r2dbc: INFO
+
+
