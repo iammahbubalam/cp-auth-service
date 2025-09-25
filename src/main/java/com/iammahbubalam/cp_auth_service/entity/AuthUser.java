@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 
 @Table("auth_user")
-public class User {
+public class AuthUser {
     @Id
     @Column("user_id")
     private UUID id;
