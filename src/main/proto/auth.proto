@@ -1,0 +1,180 @@
+syntax = "proto3";
+
+package auth;
+
+option java_package = "com.iammahbubalam.auth.grpc";
+option java_outer_classname = "AuthServiceProto";
+
+// =========================
+// AUTH SERVICE DEFINITION
+// =========================
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc ValidateUser(ValidateUserRequest) returns (ValidateUserResponse);
+  rpc IsUserExist(UserExistRequest) returns (UserExistResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc RoleCheck(RoleCheckRequest) returns (RoleCheckResponse);
+  rpc RevokeToken(RevokeTokenRequest) returns (RevokeTokenResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  rpc UpdateUserRoles(UpdateUserRolesRequest) returns (UpdateUserRolesResponse);
+  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+}
+
+
+message RegisterRequest {
+  string email = 1;
+  string username = 2;
+  string password = 3;
+  string first_name = 4;
+  string last_name = 5;
+}
+
+message RegisterResponse {
+  bool success = 1;
+  string user_id = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+  int64 expires_in = 5;
+  string message = 6;
+  UserInfo user_info = 7;
+}
+
+// Login Messages
+message LoginRequest {
+  string email_or_username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  bool success = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 expires_in = 4;
+  string message = 5;
+  UserInfo user_info = 6;
+}
+
+// Token Refresh Messages
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  bool success = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 expires_in = 4;
+  string message = 5;
+}
+
+// Token Validation Messages
+message ValidateUserRequest {
+  string token = 1;
+}
+
+message ValidateUserResponse {
+  bool valid = 1;
+  string user_id = 2;
+  string username = 3;
+  string email = 4;
+  repeated string roles = 5;
+  string message = 6;
+}
+
+// User Existence Check
+message UserExistRequest {
+  string email_or_username = 1;
+}
+
+message UserExistResponse {
+  bool exists = 1;
+  string user_id = 2;
+}
+
+// Logout Messages
+message LogoutRequest {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message LogoutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Role Check Messages
+message RoleCheckRequest {
+  string token = 1;
+  string required_role = 2;
+}
+
+message RoleCheckResponse {
+  bool authorized = 1;
+  repeated string user_roles = 2;
+  string message = 3;
+}
+
+// Token Revocation Messages
+message RevokeTokenRequest {
+  string token = 1;
+  string reason = 2;
+}
+
+message RevokeTokenResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Change Password Messages
+message ChangePasswordRequest {
+  string user_id = 1;
+  string current_password = 2;
+  string new_password = 3;
+}
+
+message ChangePasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Update User Roles Messages
+message UpdateUserRolesRequest {
+  string user_id = 1;
+  repeated string roles = 2;
+  string updated_by = 3;
+}
+
+message UpdateUserRolesResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Update User Profile Messages
+message UpdateUserProfileRequest {
+  string user_id = 1;
+  string email = 2;
+  string username = 3;
+  string first_name = 4;
+  string last_name = 5;
+}
+
+message UpdateUserProfileResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Common Messages
+message UserInfo {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string first_name = 4;
+  string last_name = 5;
+  repeated string roles = 6;
+  bool is_active = 7;
+  int64 created_at = 8;
+  int64 last_login_at = 9;
+}
