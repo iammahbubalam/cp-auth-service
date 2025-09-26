@@ -6,87 +6,104 @@ import io.github.resilience4j.core.registry.EntryRemovedEvent;
 import io.github.resilience4j.core.registry.EntryReplacedEvent;
 import io.github.resilience4j.core.registry.RegistryEventConsumer;
 import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.timelimiter.TimeLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Provides centralized, industry-grade configuration for Resilience4j event logging.
+ * This class creates event consumers that attach loggers to EVERY resilience instance
+ * (CircuitBreaker, Retry, TimeLimiter) created from the application.yml configuration,
+ * ensuring complete observability across all downstream service communications.
+ */
 @Configuration
 @Slf4j
 public class ResilienceConfig {
 
-
+    /**
+     * Creates a bean that consumes Circuit Breaker registry events.
+     * It attaches detailed loggers to every Circuit Breaker instance upon its creation.
+     */
     @Bean
-    public RegistryEventConsumer<CircuitBreaker> userServiceCircuitBreakerEventConsumer() {
+    public RegistryEventConsumer<CircuitBreaker> circuitBreakerEventConsumer() {
         return new RegistryEventConsumer<>() {
             @Override
             public void onEntryAddedEvent(EntryAddedEvent<CircuitBreaker> entryAddedEvent) {
                 CircuitBreaker circuitBreaker = entryAddedEvent.getAddedEntry();
-                // Only attach listeners to the specific instance we care about
-                if ("userService".equals(circuitBreaker.getName())) {
-                    log.info("Attaching event listeners to Circuit Breaker '{}'", circuitBreaker.getName());
-                    circuitBreaker.getEventPublisher()
-                            .onStateTransition(event ->
-                                    log.info("Circuit Breaker '{}' state transition: {} -> {}",
-                                            circuitBreaker.getName(),
-                                            event.getStateTransition().getFromState(),
-                                            event.getStateTransition().getToState()))
-                            .onCallNotPermitted(event ->
-                                    log.warn("Circuit Breaker '{}' call not permitted in state: {}",
-                                            circuitBreaker.getName(), circuitBreaker.getState()))
-                            .onError(event ->
-                                    log.error("Circuit Breaker '{}' error: '{}' after {}ms",
-                                            circuitBreaker.getName(),
-                                            event.getThrowable().toString(),
-                                            event.getElapsedDuration().toMillis()));
-                }
+                log.info("Attaching log listeners to Circuit Breaker '{}'", circuitBreaker.getName());
+
+                circuitBreaker.getEventPublisher()
+                        .onStateTransition(event ->
+                                log.warn("Circuit Breaker '{}' state changed: {} -> {}",
+                                        event.getCircuitBreakerName(),
+                                        event.getStateTransition().getFromState(),
+                                        event.getStateTransition().getToState()))
+                        .onCallNotPermitted(event ->
+                                log.warn("Circuit Breaker '{}' call not permitted. Current state is {}.",
+                                        event.getCircuitBreakerName(), circuitBreaker.getState()));
             }
 
             @Override
-            public void onEntryRemovedEvent(EntryRemovedEvent<CircuitBreaker> entryRemoveEvent) {
-
-            }
+            public void onEntryRemovedEvent(EntryRemovedEvent<CircuitBreaker> entryRemoveEvent) {}
 
             @Override
-            public void onEntryReplacedEvent(EntryReplacedEvent<CircuitBreaker> entryReplacedEvent) {
-
-            }
-
+            public void onEntryReplacedEvent(EntryReplacedEvent<CircuitBreaker> entryReplacedEvent) {}
         };
     }
 
     /**
-     * Configures event logging for the 'userService' Retry mechanism.
+     * Creates a bean that consumes Retry registry events.
+     * It attaches a logger to every Retry instance to log retry attempts.
      */
     @Bean
-    public RegistryEventConsumer<Retry> userServiceRetryEventConsumer() {
+    public RegistryEventConsumer<Retry> retryEventConsumer() {
         return new RegistryEventConsumer<>() {
             @Override
             public void onEntryAddedEvent(EntryAddedEvent<Retry> entryAddedEvent) {
                 Retry retry = entryAddedEvent.getAddedEntry();
-                if ("userService".equals(retry.getName())) {
-                    log.info("Attaching event listeners to Retry '{}'", retry.getName());
-                    retry.getEventPublisher()
-                            .onRetry(event ->
-                                    log.warn("Retry '{}', attempt {}: Call failed with: {}",
-                                            retry.getName(),
-                                            event.getNumberOfRetryAttempts(),
-                                            event.getLastThrowable().getMessage()))
-                            .onSuccess(event ->
-                                    log.info("Retry '{}' succeeded after {} attempt(s)",
-                                            retry.getName(),
-                                            event.getNumberOfRetryAttempts()));
-                }
+                log.info("Attaching log listeners to Retry '{}'", retry.getName());
+
+                retry.getEventPublisher()
+                        .onRetry(event ->
+                                log.warn("Retry '{}', attempt {}: Call failed with: {}",
+                                        event.getName(),
+                                        event.getNumberOfRetryAttempts(),
+                                        event.getLastThrowable().getMessage()));
             }
 
             @Override
-            public void onEntryRemovedEvent(EntryRemovedEvent<Retry> entryRemoveEvent) {
-                // No-op
+            public void onEntryRemovedEvent(EntryRemovedEvent<Retry> entryRemoveEvent) {}
+
+            @Override
+            public void onEntryReplacedEvent(EntryReplacedEvent<Retry> entryReplacedEvent) {}
+        };
+    }
+
+    /**
+     * Creates a bean that consumes TimeLimiter registry events.
+     * It attaches a logger to every TimeLimiter instance to log timeouts.
+     */
+    @Bean
+    public RegistryEventConsumer<TimeLimiter> timeLimiterEventConsumer() {
+        return new RegistryEventConsumer<>() {
+            @Override
+            public void onEntryAddedEvent(EntryAddedEvent<TimeLimiter> entryAddedEvent) {
+                TimeLimiter timeLimiter = entryAddedEvent.getAddedEntry();
+                log.info("Attaching log listeners to TimeLimiter '{}'", timeLimiter.getName());
+
+                timeLimiter.getEventPublisher()
+                        .onTimeout(event ->
+                                log.error("TimeLimiter '{}' recorded a timeout event after {}ms",
+                                        event.getTimeLimiterName(),
+                                        timeLimiter.getTimeLimiterConfig().getTimeoutDuration().toMillis()));
             }
 
             @Override
-            public void onEntryReplacedEvent(EntryReplacedEvent<Retry> entryReplacedEvent) {
-                // No-op
-            }
+            public void onEntryRemovedEvent(EntryRemovedEvent<TimeLimiter> entryRemoveEvent) {}
+
+            @Override
+            public void onEntryReplacedEvent(EntryReplacedEvent<TimeLimiter> entryReplacedEvent) {}
         };
     }
 }
