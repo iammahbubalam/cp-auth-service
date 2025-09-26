@@ -21,8 +21,6 @@ server:
   port: ${SERVER_PORT:8080}
 
 management:
-#  server:
-#    port: ${MANAGEMENT_PORT:8081}
   endpoints:
     web:
       exposure:
@@ -40,4 +38,43 @@ logging:
     root: WARN
     org.springframework.r2dbc: INFO
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        failure-rate-threshold: ${RESILIENCE4J_CB_FAILURE_RATE:40}
+        sliding-window-size: ${RESILIENCE4J_CB_WINDOW_SIZE:100}
+        minimum-number-of-calls: ${RESILIENCE4J_CB_MIN_CALLS:20}
+        wait-duration-in-open-state: ${RESILIENCE4J_CB_WAIT_DURATION:60s}
+        permitted-number-of-calls-in-half-open-state: ${RESILIENCE4J_CB_HALF_OPEN_CALLS:10}
+        ignore-exception-predicate: com.iammahbubalam.cp_auth_service.exception.GrpcFailureIgnorablePredicate
+        record-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+    instances:
+      cp-user-service:
+        base-config: default
 
+  retry:
+    configs:
+      default:
+        max-attempts: ${RESILIENCE4J_RETRY_MAX_ATTEMPTS:3}
+        wait-duration: ${RESILIENCE4J_RETRY_WAIT_DURATION:750ms}
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2.0
+        retry-exception-predicate: com.iammahbubalam.cp_auth_service.exception.GrpcRetryableExceptionPredicate
+        retry-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+    instances:
+      cp-user-service:
+        base-config: default
+
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: ${RESILIENCE4J_TL_TIMEOUT:5s}
+        cancel-running-future: true
+    instances:
+      cp-user-service:
+        base-config: default
