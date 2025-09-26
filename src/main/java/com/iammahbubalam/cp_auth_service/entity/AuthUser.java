@@ -45,7 +45,6 @@ public class AuthUser {
     private LocalDateTime lastModifiedDate;
 
 
-
     @Override
     public String toString() {
         return "AuthUser{" +

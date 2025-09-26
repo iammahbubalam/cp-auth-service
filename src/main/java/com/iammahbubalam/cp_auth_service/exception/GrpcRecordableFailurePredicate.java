@@ -2,6 +2,7 @@ package com.iammahbubalam.cp_auth_service.exception;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+
 import java.util.function.Predicate;
 
 /**

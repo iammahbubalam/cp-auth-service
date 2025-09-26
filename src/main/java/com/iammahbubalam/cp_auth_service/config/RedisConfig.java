@@ -36,14 +36,15 @@ public class RedisConfig {
     public ReactiveRedisTemplate<String, Object> reactiveRedisTemplate(ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
         RedisSerializationContext<String, Object> serializationContext =
                 RedisSerializationContext.<String, Object>newSerializationContext()
-                .key(new StringRedisSerializer())
-                .hashKey(new StringRedisSerializer())
-                .value(new GenericJackson2JsonRedisSerializer())
-                .hashValue(new GenericJackson2JsonRedisSerializer())
-                .build();
+                        .key(new StringRedisSerializer())
+                        .hashKey(new StringRedisSerializer())
+                        .value(new GenericJackson2JsonRedisSerializer())
+                        .hashValue(new GenericJackson2JsonRedisSerializer())
+                        .build();
         return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, serializationContext);
 
     }
+
     @Bean
     public ReactiveRedisTemplate<String, String> reactiveStringRedisTemplate(
             ReactiveRedisConnectionFactory connectionFactory) {

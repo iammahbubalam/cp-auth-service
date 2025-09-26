@@ -11,13 +11,13 @@ version = '0.0.1-SNAPSHOT'
 description = 'Reactive gRPC Authentication service for Problem Solving Platform'
 
 ext {
-    springBootVersion            = '3.5.6'
+    springBootVersion = '3.5.6'
     grpcSpringBootStarterVersion = '3.1.0.RELEASE'
-    protobufVersion              = '4.28.2'
-    grpcVersion                  = '1.64.0'
-    jjwtVersion                  = '0.12.5'
-    auth0JwtVersion              = '4.4.0'
-    resilience4jVersion          = '2.2.0'
+    protobufVersion = '4.28.2'
+    grpcVersion = '1.64.0'
+    jjwtVersion = '0.12.5'
+    auth0JwtVersion = '4.4.0'
+    resilience4jVersion = '2.2.0'
 }
 
 java {

@@ -26,6 +26,7 @@ public class CacheConfig {
         cacheManager.setCacheNames(Collections.of("userCache", "roleCache", "publicKeyCache"));
         return cacheManager;
     }
+
     @Bean("userCacheBuilder")
     public Caffeine<Object, Object> userCacheBuilder() {
         return Caffeine.newBuilder()
@@ -34,6 +35,7 @@ public class CacheConfig {
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .recordStats();
     }
+
     @Bean("roleCacheBuilder")
     public Caffeine<Object, Object> roleCacheBuilder() {
         return Caffeine.newBuilder()
