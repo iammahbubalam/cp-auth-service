@@ -51,6 +51,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.security:spring-security-crypto'
 
     // gRPC support
     implementation "net.devh:grpc-spring-boot-starter:${grpcSpringBootStarterVersion}"
