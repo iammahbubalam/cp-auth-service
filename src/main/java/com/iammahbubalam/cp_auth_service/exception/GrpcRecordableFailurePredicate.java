@@ -14,18 +14,13 @@ public class GrpcRecordableFailurePredicate implements Predicate<Throwable> {
     @Override
     public boolean test(Throwable throwable) {
         if (!(throwable instanceof StatusRuntimeException exception)) {
-            return false; // Let the 'record-exceptions' list handle non-gRPC errors.
+            return false;
         }
 
         Status.Code code = exception.getStatus().getCode();
-
-        // These codes indicate a server-side or network failure.
-        // They should count against the service's health.
         return switch (code) {
             case UNAVAILABLE, INTERNAL, UNIMPLEMENTED, DEADLINE_EXCEEDED, RESOURCE_EXHAUSTED ->
-                    true; // Count as failure
-
-            // Client-side errors should NOT count as a server failure.
+                    true;
             default -> false;
         };
     }
