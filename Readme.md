@@ -1,8 +1,7 @@
 # Commands
 
 ```
-docker run -d 
---name auth_postgres \
+docker run -d --name auth_postgres \
 -e POSTGRES_USER=root \
 -e POSTGRES_PASSWORD=root \
 -e POSTGRES_DB=auth_db \
@@ -17,4 +16,14 @@ docker run -d \
   redis:7 \
   redis-server --requirepass root
 
+```
+
+## Generate Public and Private Keys
+
+```
+# Generate a 4096-bit private key
+openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:4096
+
+# Extract the public key from the private key
+openssl rsa -pubout -in private_key.pem -out public_key.pem}
 ```
