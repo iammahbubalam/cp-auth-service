@@ -41,14 +41,6 @@ public class RefreshToken {
 
     @Override
     public String toString() {
-        return "RefreshToken{" +
-                "tokenId=" + tokenId +
-                ", userId=" + userId +
-                ", tokenHash='" + tokenHash + '\'' +
-                ", expiresAt=" + expiresAt +
-                ", createdAt=" + createdAt +
-                ", isRevoked=" + isRevoked +
-                ", deviceInfo='" + device + '\'' +
-                '}';
+        return "RefreshToken{tokenId=%s, userId=%s, tokenHash='%s', expiresAt=%s, createdAt=%s, isRevoked=%s, deviceInfo='%s'}".formatted(tokenId, userId, tokenHash, expiresAt, createdAt, isRevoked, device);
     }
 }

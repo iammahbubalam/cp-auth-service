@@ -25,10 +25,8 @@ public class UserRole {
 
     @Override
     public String toString() {
-        return "UserRole{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", role='" + role + '\'' +
-                '}';
+        return "UserRole{id=%s, userId=%s, role='%s'}".formatted(id, userId, role);
     }
+
+
 }

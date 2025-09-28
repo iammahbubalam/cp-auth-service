@@ -17,7 +17,6 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Table("auth_user")
 public class AuthUser {
     @Id
@@ -47,18 +46,7 @@ public class AuthUser {
 
     @Override
     public String toString() {
-        return "AuthUser{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", roles=" + roles +
-                ", isActive=" + isActive +
-                ", creationDate=" + creationDate +
-                ", lastModifiedDate=" + lastModifiedDate +
-                '}';
+        return "AuthUser{id=%s, username='%s', email='%s', password='%s', firstName='%s', lastName='%s', roles=%s, isActive=%s, creationDate=%s, lastModifiedDate=%s}".formatted(id, username, email, password, firstName, lastName, roles, isActive, creationDate, lastModifiedDate);
     }
 }
 
