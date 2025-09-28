@@ -89,3 +89,32 @@ resilience4j:
     instances:
       cp-user-service:
         base-config: default
+
+
+app:
+  jwt:
+    token:
+      expiration:
+        access: 3600    # 1 hour in seconds
+        refresh: 2592000 # 30 days in seconds
+      issuer: "auth-service"
+
+    # RSA Key Configuration (base64 encoded)
+    rsa:
+      private-key-path: "cp-auth-service/private_key.pem"
+      public-key-path: "cp-auth-service/public_key.pem"
+  cache:
+    caffeine:
+      default-ttl: 300  # 5 minutes
+      user-context-ttl: 300  # 5 minutes
+      role-cache-ttl: 600   # 10 minutes
+    redis:
+      blacklist-ttl: 86400  # 24 hours
+
+  # Password Policy
+  password:
+    min-length: 8
+    require-uppercase: true
+    require-lowercase: true
+    require-digits: true
+    require-special-chars: false
