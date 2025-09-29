@@ -21,14 +21,12 @@ public class GrpcRetryableExceptionPredicate implements Predicate<Throwable> {
 
 
         return switch (code) {
-            case UNAVAILABLE, INTERNAL, UNIMPLEMENTED, DEADLINE_EXCEEDED, RESOURCE_EXHAUSTED ->
-                    true;
+            case UNAVAILABLE, INTERNAL, UNIMPLEMENTED, DEADLINE_EXCEEDED, RESOURCE_EXHAUSTED -> true;
             // These are definitive client-side or data errors. Retrying will not help.
             case INVALID_ARGUMENT, NOT_FOUND, ALREADY_EXISTS, PERMISSION_DENIED, UNAUTHENTICATED, FAILED_PRECONDITION,
                  CANCELLED, ABORTED, OUT_OF_RANGE -> false;
 
-            default ->
-                    false;
+            default -> false;
         };
     }
 }

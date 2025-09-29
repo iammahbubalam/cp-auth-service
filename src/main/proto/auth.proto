@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth;
 
-option java_package = "com.iammahbubalam.auth.grpc";
+option java_package = "com.iammahbubalam.cpAuthService.grpc";
 option java_outer_classname = "AuthServiceProto";
 
 // =========================

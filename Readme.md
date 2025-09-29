@@ -27,3 +27,9 @@ openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:409
 # Extract the public key from the private key
 openssl rsa -pubout -in private_key.pem -out public_key.pem}
 ```
+
+## Descriptor File
+
+```
+ protoc --proto_path=src/main/proto --descriptor_set_out=src/main/resources/descriptors/auth.desc --include_imports auth.proto
+```

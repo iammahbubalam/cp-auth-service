@@ -48,6 +48,7 @@ public class PasswordValidator {
         }
         return false;
     }
+
     private boolean containsRepeatingCharacters(String password) {
         char previousChar = 0;
         int repeatCount = 1;

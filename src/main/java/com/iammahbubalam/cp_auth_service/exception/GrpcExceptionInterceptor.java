@@ -37,6 +37,7 @@ public class GrpcExceptionInterceptor implements ServerInterceptor {
                     call.close(Status.INTERNAL.withDescription("Internal server error").withCause(e), new Metadata());
                 }
             }
-    };
-    }}
+        };
+    }
+}
 

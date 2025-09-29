@@ -35,6 +35,7 @@ public class TokenBlacklistService {
                 .doOnError(error -> log.error("Failed to blacklist access token: {}", tokenId, error))
                 .then();
     }
+
     public Mono<Void> blacklistRefreshToken(String tokenId, LocalDateTime expirationTime) {
         String key = BLACKLIST_PREFIX + REFRESH_TOKEN_PREFIX + tokenId;
         Duration ttl = Duration.between(LocalDateTime.now(), expirationTime);
@@ -50,6 +51,7 @@ public class TokenBlacklistService {
                 .doOnError(error -> log.error("Failed to blacklist refresh token: {}", tokenId, error))
                 .then();
     }
+
     public Mono<Boolean> isTokenBlacklisted(String tokenId) {
         if (tokenId == null) {
             return Mono.just(false);

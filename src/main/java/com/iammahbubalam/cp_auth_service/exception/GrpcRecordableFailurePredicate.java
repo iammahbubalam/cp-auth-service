@@ -19,8 +19,7 @@ public class GrpcRecordableFailurePredicate implements Predicate<Throwable> {
 
         Status.Code code = exception.getStatus().getCode();
         return switch (code) {
-            case UNAVAILABLE, INTERNAL, UNIMPLEMENTED, DEADLINE_EXCEEDED, RESOURCE_EXHAUSTED ->
-                    true;
+            case UNAVAILABLE, INTERNAL, UNIMPLEMENTED, DEADLINE_EXCEEDED, RESOURCE_EXHAUSTED -> true;
             default -> false;
         };
     }
