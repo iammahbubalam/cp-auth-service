@@ -32,8 +32,6 @@ public class AuthUser {
     private String firstName;
     @Column("last_name")
     private String lastName;
-    @Column("roles")
-    private Set<UserRole> roles;
     @Column("is_active")
     private boolean isActive;
     @CreatedDate
@@ -46,7 +44,7 @@ public class AuthUser {
 
     @Override
     public String toString() {
-        return "AuthUser{id=%s, username='%s', email='%s', password='%s', firstName='%s', lastName='%s', roles=%s, isActive=%s, creationDate=%s, lastModifiedDate=%s}".formatted(id, username, email, password, firstName, lastName, roles, isActive, creationDate, lastModifiedDate);
+        return "AuthUser{id=%s, username='%s', email='%s', password='%s', firstName='%s', lastName='%s', isActive=%s, creationDate=%s, lastModifiedDate=%s}".formatted(id, username, email, password, firstName, lastName,  isActive, creationDate, lastModifiedDate);
     }
 }
 
