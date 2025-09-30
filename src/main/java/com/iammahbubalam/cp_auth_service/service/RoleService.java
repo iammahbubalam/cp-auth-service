@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
+
 @Service
 public class RoleService {
     private static final Set<String> VALID_ROLES = Collections.setOf("USER", "ADMIN", "MODERATOR");

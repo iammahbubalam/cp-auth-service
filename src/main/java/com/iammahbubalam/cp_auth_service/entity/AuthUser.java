@@ -9,7 +9,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Setter
@@ -44,7 +43,7 @@ public class AuthUser {
 
     @Override
     public String toString() {
-        return "AuthUser{id=%s, username='%s', email='%s', password='%s', firstName='%s', lastName='%s', isActive=%s, creationDate=%s, lastModifiedDate=%s}".formatted(id, username, email, password, firstName, lastName,  isActive, creationDate, lastModifiedDate);
+        return "AuthUser{id=%s, username='%s', email='%s', password='%s', firstName='%s', lastName='%s', isActive=%s, creationDate=%s, lastModifiedDate=%s}".formatted(id, username, email, password, firstName, lastName, isActive, creationDate, lastModifiedDate);
     }
 }
 

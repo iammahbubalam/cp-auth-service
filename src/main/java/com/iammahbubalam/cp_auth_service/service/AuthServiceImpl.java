@@ -79,7 +79,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
         logger.info("Login attempt for: {}", request.getEmailOrUsername());
 
         authenticateUser(request)
-                .flatMap(authUser -> UserMapper.toDto(authUser ,roleRepository.findByUserId(authUser.getId()).map(UserRole::getRole).collect(Collectors.toSet()).block()))
+                .flatMap(authUser -> UserMapper.toDto(authUser, roleRepository.findByUserId(authUser.getId()).map(UserRole::getRole).collect(Collectors.toSet()).block()))
                 .flatMap(this::generateTokensForLogin)
                 .flatMap(this::cacheUserData)
                 .subscribe(
@@ -293,7 +293,6 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
 
-
     private Mono<AuthServiceProto.RegisterRequest> validateRegistrationRequest(AuthServiceProto.RegisterRequest request) {
         if (request.getEmail().trim().isEmpty()) {
             return Mono.error(new IllegalArgumentException("Email is required"));
@@ -318,6 +317,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                     return Mono.just(request);
                 });
     }
+
     private Mono<AuthServiceProto.RegisterRequest> checkUserExistence(AuthServiceProto.RegisterRequest request) {
         return Mono.zip(
                 authUserRepository.existsByEmail(request.getEmail()),
@@ -327,27 +327,29 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
             boolean usernameExists = tuple.getT2();
 
             if (emailExists) {
-                return Mono.error(new DuplicateUserException("User Already Exist With Email: "+request.getEmail()));
+                return Mono.error(new DuplicateUserException("User Already Exist With Email: " + request.getEmail()));
             }
             if (usernameExists) {
-                return Mono.error(new DuplicateUserException("User Already Exist With UserName"+request.getUsername()));
+                return Mono.error(new DuplicateUserException("User Already Exist With UserName" + request.getUsername()));
             }
             return Mono.just(request);
         });
     }
+
     @Transactional
     protected Mono<AuthUser> createAuthUser(AuthServiceProto.RegisterRequest request) {
         return passwordService.hashPassword(request.getPassword())
                 .map(hashedPassword -> AuthUser.builder()
-                    .username(request.getUsername())
-                    .email(request.getEmail())
-                    .password(hashedPassword)
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .isActive(true)
-                    .build())
+                        .username(request.getUsername())
+                        .email(request.getEmail())
+                        .password(hashedPassword)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .isActive(true)
+                        .build())
                 .flatMap(authUserRepository::save);
     }
+
     @Transactional
     protected Mono<UserRole> createUserRole(AuthUser user, String role) {
         UserRole userRole = UserRole.builder()
@@ -356,6 +358,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                 .build();
         return roleRepository.save(userRole);
     }
+
     private Mono<AuthUser> createUserProfile(AuthUser authUser) {
         if (authUser == null) {
             return Mono.error(new IllegalArgumentException("authUser must not be null"));
@@ -375,36 +378,38 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
             }
             return Mono.just(authUser);
         }).onErrorResume(error -> {
-            logger.error("Error during user profile creation for userId={}", authUser.getId(), error );
+            logger.error("Error during user profile creation for userId={}", authUser.getId(), error);
             return authUserRepository.delete(authUser)
-                    .then(Mono.error(new UserCreationException("Failed to create user profile :"+ error.getMessage())));
+                    .then(Mono.error(new UserCreationException("Failed to create user profile :" + error.getMessage())));
         });
     }
+
     private Mono<AuthServiceProto.RegisterResponse> generateTokensForNewUser(UserDto user) {
         return jwtService.generateTokenPair(user)
-            .map(tokenPair -> {
-                AuthServiceProto.UserInfo userInfo = AuthServiceProto.UserInfo.newBuilder()
-                        .setUserId(user.getUserId().toString())
-                        .setUsername(user.getUsername())
-                        .setEmail(user.getEmail())
-                        .setFirstName(user.getFirstName() != null ? user.getFirstName() : "")
-                        .setLastName(user.getLastName() != null ? user.getLastName() : "")
-                        .addAllRoles(Set.of("USER"))
-                        .setIsActive(user.isActive())
+                .map(tokenPair -> {
+                    AuthServiceProto.UserInfo userInfo = AuthServiceProto.UserInfo.newBuilder()
+                            .setUserId(user.getUserId().toString())
+                            .setUsername(user.getUsername())
+                            .setEmail(user.getEmail())
+                            .setFirstName(user.getFirstName() != null ? user.getFirstName() : "")
+                            .setLastName(user.getLastName() != null ? user.getLastName() : "")
+                            .addAllRoles(Set.of("USER"))
+                            .setIsActive(user.isActive())
 //                        .setCreatedAt(user.getCreationDate().toEpochSecond(java.time.ZoneOffset.UTC))
-                        .build();
+                            .build();
 
-                return AuthServiceProto.RegisterResponse.newBuilder()
-                        .setSuccess(true)
-                        .setUserId(user.getUserId().toString())
-                        .setAccessToken(tokenPair.getAccessToken())
-                        .setRefreshToken(tokenPair.getRefreshToken())
-                        .setExpiresIn(tokenPair.getExpiresIn())
-                        .setMessage("Registration successful")
-                        .setUserInfo(userInfo)
-                        .build();
-            });
-}
+                    return AuthServiceProto.RegisterResponse.newBuilder()
+                            .setSuccess(true)
+                            .setUserId(user.getUserId().toString())
+                            .setAccessToken(tokenPair.getAccessToken())
+                            .setRefreshToken(tokenPair.getRefreshToken())
+                            .setExpiresIn(tokenPair.getExpiresIn())
+                            .setMessage("Registration successful")
+                            .setUserInfo(userInfo)
+                            .build();
+                });
+    }
+
     private Mono<AuthUser> authenticateUser(AuthServiceProto.LoginRequest request) {
         return authUserRepository.findByEmailOrUsername(request.getEmailOrUsername())
                 .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid email or username")))
@@ -422,6 +427,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                             });
                 });
     }
+
     private Mono<AuthServiceProto.LoginResponse> generateTokensForLogin(UserDto user) {
         return jwtService.generateTokenPair(user)
                 .map(tokenPair -> {
@@ -448,6 +454,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                             .build();
                 });
     }
+
     private Mono<AuthServiceProto.LoginResponse> cacheUserData(AuthServiceProto.LoginResponse response) {
         UUID userId = UUID.fromString(response.getUserInfo().getUserId());
 
@@ -464,6 +471,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
         return cacheService.cacheUserDto(userId, userContext)
                 .then(Mono.just(response));
     }
+
     private Mono<AuthServiceProto.RefreshTokenResponse> validateRefreshTokenAndGenerateNew(AuthServiceProto.RefreshTokenRequest request) {
         return jwtService.validateRefreshToken(request.getRefreshToken())
                 .flatMap(userContext ->
@@ -498,6 +506,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                             );
                 });
     }
+
     private Mono<AuthServiceProto.LogoutResponse> performLogout(AuthServiceProto.LogoutRequest request) {
         String accessTokenId = TokenUtils.extractTokenId(request.getAccessToken());
         String refreshTokenId = TokenUtils.extractTokenId(request.getRefreshToken());
@@ -513,6 +522,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                 .setMessage("Logout successful")
                 .build()));
     }
+
     private Mono<AuthServiceProto.RevokeTokenResponse> revokeTokenById(AuthServiceProto.RevokeTokenRequest request) {
         String tokenId = TokenUtils.extractTokenId(request.getToken());
         LocalDateTime expiration = LocalDateTime.now().plusDays(30); // Safe upper bound
@@ -524,6 +534,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                         .setMessage("Token revoked successfully")
                         .build()));
     }
+
     private Mono<AuthServiceProto.ChangePasswordResponse> performPasswordChange(AuthServiceProto.ChangePasswordRequest request) {
         UUID userId = UUID.fromString(request.getUserId());
 
@@ -547,6 +558,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                                         .build()))
                 );
     }
+
     private Mono<AuthServiceProto.UpdateUserRolesResponse> performRoleUpdate(AuthServiceProto.UpdateUserRolesRequest request) {
         UUID userId = UUID.fromString(request.getUserId());
         String newRole = request.getRolesList().isEmpty() ? "USER" : request.getRolesList().get(0);
@@ -565,6 +577,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                                     .build()));
                 });
     }
+
     private Mono<AuthServiceProto.UpdateUserProfileResponse> performProfileUpdate(AuthServiceProto.UpdateUserProfileRequest request) {
         UUID userId = UUID.fromString(request.getUserId());
 
@@ -594,6 +607,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
                         .setMessage("Profile updated successfully")
                         .build()));
     }
+
     private Throwable handleAuthError(Throwable error) {
         switch (error) {
             case DuplicateUserException duplicateUserException -> {
@@ -614,11 +628,6 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
             }
         }
     }
-
-
-
-
-
 
 
 }

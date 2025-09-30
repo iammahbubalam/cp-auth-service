@@ -9,7 +9,8 @@ import java.util.UUID;
 public class UserServiceClient {
     public Mono<Object> createUser(UUID id, String username, String email, String firstName, String lastName) {
 
-    return Mono.empty();}
+        return Mono.empty();
+    }
 
     public boolean isSuccessResponse(Object response) {
         return true;
@@ -21,5 +22,6 @@ public class UserServiceClient {
 
     public Mono<Object> updateUser(UUID userId, String username, String email, String firstName, String lastName) {
 
-    return Mono.empty();}
+        return Mono.empty();
+    }
 }

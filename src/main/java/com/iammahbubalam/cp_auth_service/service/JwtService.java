@@ -8,7 +8,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.iammahbubalam.cp_auth_service.dto.TokenPair;
 import com.iammahbubalam.cp_auth_service.dto.UserDto;
-import com.iammahbubalam.cp_auth_service.entity.AuthUser;
 import com.iammahbubalam.cp_auth_service.exception.TokenBlacklistException;
 import com.iammahbubalam.cp_auth_service.exception.TokenInvalidException;
 import com.iammahbubalam.cp_auth_service.util.TokenUtils;

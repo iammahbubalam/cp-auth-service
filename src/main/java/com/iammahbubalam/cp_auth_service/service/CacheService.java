@@ -2,7 +2,6 @@ package com.iammahbubalam.cp_auth_service.service;
 
 import com.iammahbubalam.cp_auth_service.dto.UserDto;
 import com.iammahbubalam.cp_auth_service.entity.AuthUser;
-import com.iammahbubalam.cp_auth_service.entity.UserRole;
 import com.iammahbubalam.cp_auth_service.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
