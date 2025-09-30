@@ -5,7 +5,6 @@ import com.iammahbubalam.cp_auth_service.entity.AuthUser;
 import com.iammahbubalam.cp_auth_service.entity.UserRole;
 import com.iammahbubalam.cp_auth_service.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -67,11 +65,6 @@ public class CacheService {
                 .email(authUser.getEmail())
                 .firstName(authUser.getFirstName())
                 .lastName(authUser.getLastName())
-                .roles(
-                        authUser.getRoles().stream()
-                                .map(UserRole::getRole)
-                                .collect(java.util.stream.Collectors.toSet())
-                )
                 .isActive(authUser.isActive())
                 .build();
 
@@ -91,6 +84,7 @@ public class CacheService {
                     return Mono.empty();
                 });
     }
+
     public Mono<UserDto> getCachedUserDto(UUID userId) {
         String key = USER_CACHE_PREFIX + userId.toString();
 

@@ -9,13 +9,12 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.iammahbubalam.cp_auth_service.dto.TokenPair;
 import com.iammahbubalam.cp_auth_service.dto.UserDto;
 import com.iammahbubalam.cp_auth_service.entity.AuthUser;
-import com.iammahbubalam.cp_auth_service.entity.UserRole;
 import com.iammahbubalam.cp_auth_service.exception.TokenBlacklistException;
 import com.iammahbubalam.cp_auth_service.exception.TokenInvalidException;
 import com.iammahbubalam.cp_auth_service.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -23,48 +22,46 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class JwtService {
+    private final SecurityKeyManager securityKeyManager;
+    private final TokenBlacklistService tokenBlacklistService;
     @Value("${app.jwt.token.issuer}")
     private String issuer;
-
     @Value("${app.jwt.token.expiration.access:3600}")
     private long accessTokenTtl; // 1 hour
-
     @Value("${app.jwt.token.expiration.refresh:2592000}")
     private long refreshTokenTtl;
 
-    private final SecurityKeyManager securityKeyManager;
-    private final TokenBlacklistService tokenBlacklistService;
+    public Mono<TokenPair> generateTokenPair(UserDto user) {
+        return Mono.fromCallable(() -> {
+                    try {
+                        Algorithm algorithm = Algorithm.RSA256(
+                                (RSAPublicKey) securityKeyManager.getPublicKey(),
+                                (RSAPrivateKey) securityKeyManager.getPrivateKey()
+                        );
 
-    public Mono<TokenPair> generateTokenPair(AuthUser user) {
-        return Mono.fromCallable(
-
-                () ->{
-       try{
-           Algorithm algorithm = Algorithm.RSA256(
-                   (RSAPublicKey) securityKeyManager.getPublicKey(),
-                   (RSAPrivateKey) securityKeyManager.getPrivateKey()
-           );
-
-           String accessToken = generateAccessToken(user, algorithm);
-           String refreshToken = generateRefreshToken(user, algorithm);
-           return new TokenPair(accessToken, refreshToken, accessTokenTtl);
-       }catch (Exception e){
-           log.error("Failed to generate token pair for user: {}", user.getId(), e);
-           throw new RuntimeException("Token generation failed", e);
-       }}
+                        String accessToken = generateAccessToken(user, algorithm);
+                        String refreshToken = generateRefreshToken(user, algorithm);
+                        return new TokenPair(accessToken, refreshToken, accessTokenTtl);
+                    } catch (Exception e) {
+                        log.error("Failed to generate token pair for user: {}", user.getUserId(), e);
+                        throw new RuntimeException("Token generation failed", e);
+                    }
+                }
         );
     }
 
-    private String generateAccessToken(AuthUser user, Algorithm algorithm) {
+    private String generateAccessToken(UserDto user, Algorithm algorithm) {
         return JWT.create()
                 .withIssuer(issuer)
-                .withSubject(user.getId().toString())
+                .withSubject(user.getUserId().toString())
                 .withClaim("username", user.getUsername())
                 .withClaim("email", user.getEmail())
                 .withClaim("firstName", user.getFirstName())
@@ -77,10 +74,10 @@ public class JwtService {
                 .sign(algorithm);
     }
 
-    private String generateRefreshToken(AuthUser user, Algorithm algorithm) {
+    private String generateRefreshToken(UserDto user, Algorithm algorithm) {
         return JWT.create()
                 .withIssuer(issuer)
-                .withSubject(user.getId().toString())
+                .withSubject(user.getUserId().toString())
                 .withClaim("type", "refresh")
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + (refreshTokenTtl * 1000)))
@@ -106,7 +103,7 @@ public class JwtService {
 
                     } catch (JWTVerificationException e) {
                         log.debug("Invalid JWT token: {}", e.getMessage());
-                        throw new TokenInvalidException("Invalid JWT token: {}"+ e.getMessage());
+                        throw new TokenInvalidException("Invalid JWT token: {}" + e.getMessage());
                     }
                 })
                 .flatMap(userContext -> {
@@ -127,12 +124,12 @@ public class JwtService {
         return UserDto.builder()
                 .userId(java.util.UUID.fromString(jwt.getSubject()))
                 .username(jwt.getClaim("username").asString())
-                        .email(jwt.getClaim("email").asString())
-                        .firstName(jwt.getClaim("firstName").asString())
-                        .lastName(jwt.getClaim("lastName").asString())
-                        .roles(!roles.isEmpty() ? roles : io.jsonwebtoken.lang.Collections.setOf("USER"))
-                        .isActive(jwt.getClaim("isActive").asBoolean() != null ? jwt.getClaim("isActive").asBoolean() : true)
-                        .build();
+                .email(jwt.getClaim("email").asString())
+                .firstName(jwt.getClaim("firstName").asString())
+                .lastName(jwt.getClaim("lastName").asString())
+                .roles(!roles.isEmpty() ? roles : io.jsonwebtoken.lang.Collections.setOf("USER"))
+                .isActive(jwt.getClaim("isActive").asBoolean() != null ? jwt.getClaim("isActive").asBoolean() : true)
+                .build();
     }
 
     public Mono<UserDto> validateRefreshToken(String refreshToken) {
@@ -157,7 +154,7 @@ public class JwtService {
 
                     } catch (JWTVerificationException e) {
                         log.debug("Invalid refresh token: {}", e.getMessage());
-                        throw new TokenInvalidException("Invalid refresh token: {}"+ e.getMessage());
+                        throw new TokenInvalidException("Invalid refresh token: {}" + e.getMessage());
                     }
                 })
                 .flatMap(userDto -> {
@@ -171,6 +168,7 @@ public class JwtService {
                             });
                 });
     }
+
     public Mono<LocalDateTime> getTokenExpiration(String token) {
         return Mono.fromCallable(() -> {
             Date expiration = TokenUtils.extractExpiration(token);

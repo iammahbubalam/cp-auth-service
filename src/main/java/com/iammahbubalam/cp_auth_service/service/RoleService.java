@@ -2,17 +2,15 @@ package com.iammahbubalam.cp_auth_service.service;
 
 import com.iammahbubalam.cp_auth_service.dto.UserDto;
 import io.jsonwebtoken.lang.Collections;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
-
+@Service
 public class RoleService {
     private static final Set<String> VALID_ROLES = Collections.setOf("USER", "ADMIN", "MODERATOR");
     private static final Set<String> ADMIN_ROLES = Collections.setOf("ADMIN");
     private static final Set<String> MODERATOR_ROLES = Collections.setOf("ADMIN", "MODERATOR");
-
 
 
     public Mono<Boolean> hasRole(UserDto userDto, String requiredRole) {
@@ -35,9 +33,11 @@ public class RoleService {
                     .anyMatch(requiredRoles::contains);
         });
     }
+
     public Mono<Boolean> isAdmin(UserDto userDto) {
         return hasAnyRole(userDto, ADMIN_ROLES);
     }
+
     public Mono<Boolean> isModerator(UserDto userDto) {
         return hasAnyRole(userDto, MODERATOR_ROLES);
     }

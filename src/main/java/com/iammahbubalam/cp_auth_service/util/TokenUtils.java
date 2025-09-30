@@ -12,13 +12,14 @@ import java.util.UUID;
 public class TokenUtils {
 
     public static String extractTokenId(String bearerToken) {
-        try{
+        try {
             DecodedJWT jwt = JWT.decode(bearerToken);
             return jwt.getId();
-        }catch (JWTDecodeException e){
-           throw new JWTVerificationException("Invalid  token", e);
+        } catch (JWTDecodeException e) {
+            throw new JWTVerificationException("Invalid  token", e);
         }
     }
+
     public static String extractSubject(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
@@ -27,6 +28,7 @@ public class TokenUtils {
             return null;
         }
     }
+
     public static Date extractExpiration(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
@@ -35,10 +37,12 @@ public class TokenUtils {
             return null;
         }
     }
+
     public static boolean isTokenExpired(String token) {
         Date expiration = extractExpiration(token);
         return expiration != null && expiration.before(new Date());
     }
+
     public static String generateTokenId() {
         return UUID.randomUUID().toString();
     }
@@ -51,7 +55,6 @@ public class TokenUtils {
     public static long getExpirationTimestamp(long ttlSeconds) {
         return getCurrentTimestamp() + ttlSeconds;
     }
-
 
 
     public static boolean isValidUUID(String uuid) {
@@ -69,23 +72,6 @@ public class TokenUtils {
         }
         return token.substring(0, 4) + "***" + token.substring(token.length() - 4);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

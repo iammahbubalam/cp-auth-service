@@ -1,10 +1,7 @@
 package com.iammahbubalam.cp_auth_service.dto;
 
-import com.iammahbubalam.cp_auth_service.entity.UserRole;
 import lombok.*;
-import org.checkerframework.checker.units.qual.A;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,6 +18,7 @@ public class UserDto {
     private String lastName;
     private Set<String> roles;
     private boolean isActive;
+
     public boolean hasRole(String role) {
         return roles != null && roles.contains(role);
     }

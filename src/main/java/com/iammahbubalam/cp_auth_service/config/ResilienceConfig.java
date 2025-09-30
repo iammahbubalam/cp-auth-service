@@ -1,12 +1,15 @@
 package com.iammahbubalam.cp_auth_service.config;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.core.registry.EntryAddedEvent;
 import io.github.resilience4j.core.registry.EntryRemovedEvent;
 import io.github.resilience4j.core.registry.EntryReplacedEvent;
 import io.github.resilience4j.core.registry.RegistryEventConsumer;
 import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiter;
+import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,10 +48,12 @@ public class ResilienceConfig {
             }
 
             @Override
-            public void onEntryRemovedEvent(EntryRemovedEvent<CircuitBreaker> entryRemoveEvent) {}
+            public void onEntryRemovedEvent(EntryRemovedEvent<CircuitBreaker> entryRemoveEvent) {
+            }
 
             @Override
-            public void onEntryReplacedEvent(EntryReplacedEvent<CircuitBreaker> entryReplacedEvent) {}
+            public void onEntryReplacedEvent(EntryReplacedEvent<CircuitBreaker> entryReplacedEvent) {
+            }
         };
     }
 
@@ -73,10 +78,12 @@ public class ResilienceConfig {
             }
 
             @Override
-            public void onEntryRemovedEvent(EntryRemovedEvent<Retry> entryRemoveEvent) {}
+            public void onEntryRemovedEvent(EntryRemovedEvent<Retry> entryRemoveEvent) {
+            }
 
             @Override
-            public void onEntryReplacedEvent(EntryReplacedEvent<Retry> entryReplacedEvent) {}
+            public void onEntryReplacedEvent(EntryReplacedEvent<Retry> entryReplacedEvent) {
+            }
         };
     }
 
@@ -100,10 +107,27 @@ public class ResilienceConfig {
             }
 
             @Override
-            public void onEntryRemovedEvent(EntryRemovedEvent<TimeLimiter> entryRemoveEvent) {}
+            public void onEntryRemovedEvent(EntryRemovedEvent<TimeLimiter> entryRemoveEvent) {
+            }
 
             @Override
-            public void onEntryReplacedEvent(EntryReplacedEvent<TimeLimiter> entryReplacedEvent) {}
+            public void onEntryReplacedEvent(EntryReplacedEvent<TimeLimiter> entryReplacedEvent) {
+            }
         };
+    }
+
+    @Bean
+    public CircuitBreaker circuitBreaker(CircuitBreakerRegistry registry) {
+        return registry.circuitBreaker("default");
+    }
+
+    @Bean
+    public Retry retry(RetryRegistry registry) {
+        return registry.retry("default");
+    }
+
+    @Bean
+    public TimeLimiter timeLimiter(TimeLimiterRegistry registry) {
+        return registry.timeLimiter("default");
     }
 }
