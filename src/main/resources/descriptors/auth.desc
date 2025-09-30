@@ -1,0 +1,126 @@
+
+Ë
+
+auth.protoauth"›
+RegisterRequest
+email (	Remail
+username (	Rusername
+password (	Rpassword
+
+first_name (	R	firstName
+	last_name (	RlastName"ó
+RegisterResponse
+success (Rsuccess
+user_id (	RuserId!
+access_token (	RaccessToken#
+refresh_token (	RrefreshToken
+
+expires_in (R	expiresIn
+message (	Rmessage+
+	user_info (2.auth.UserInfoRuserInfo"V
+LoginRequest*
+email_or_username (	RemailOrUsername
+password (	Rpassword"×
+LoginResponse
+success (Rsuccess!
+access_token (	RaccessToken#
+refresh_token (	RrefreshToken
+
+expires_in (R	expiresIn
+message (	Rmessage+
+	user_info (2.auth.UserInfoRuserInfo":
+RefreshTokenRequest#
+refresh_token (	RrefreshToken"±
+RefreshTokenResponse
+success (Rsuccess!
+access_token (	RaccessToken#
+refresh_token (	RrefreshToken
+
+expires_in (R	expiresIn
+message (	Rmessage"+
+ValidateUserRequest
+token (	Rtoken"§
+ValidateUserResponse
+valid (Rvalid
+user_id (	RuserId
+username (	Rusername
+email (	Remail
+roles (	Rroles
+message (	Rmessage">
+UserExistRequest*
+email_or_username (	RemailOrUsername"D
+UserExistResponse
+exists (Rexists
+user_id (	RuserId"W
+LogoutRequest!
+access_token (	RaccessToken#
+refresh_token (	RrefreshToken"D
+LogoutResponse
+success (Rsuccess
+message (	Rmessage"M
+RoleCheckRequest
+token (	Rtoken#
+required_role (	RrequiredRole"l
+RoleCheckResponse
+
+authorized (R
+authorized
+
+user_roles (	R	userRoles
+message (	Rmessage"B
+RevokeTokenRequest
+token (	Rtoken
+reason (	Rreason"I
+RevokeTokenResponse
+success (Rsuccess
+message (	Rmessage"~
+ChangePasswordRequest
+user_id (	RuserId)
+current_password (	RcurrentPassword!
+new_password (	RnewPassword"L
+ChangePasswordResponse
+success (Rsuccess
+message (	Rmessage"f
+UpdateUserRolesRequest
+user_id (	RuserId
+roles (	Rroles
+
+updated_by (	R	updatedBy"M
+UpdateUserRolesResponse
+success (Rsuccess
+message (	Rmessage"¡
+UpdateUserProfileRequest
+user_id (	RuserId
+email (	Remail
+username (	Rusername
+
+first_name (	R	firstName
+	last_name (	RlastName"O
+UpdateUserProfileResponse
+success (Rsuccess
+message (	Rmessage"‡
+UserInfo
+user_id (	RuserId
+username (	Rusername
+email (	Remail
+
+first_name (	R	firstName
+	last_name (	RlastName
+roles (	Rroles
+	is_active (RisActive
+
+created_at (R	createdAt"
+last_login_at	 (RlastLoginAt2ò
+AuthService9
+Register.auth.RegisterRequest.auth.RegisterResponse0
+Login.auth.LoginRequest.auth.LoginResponseE
+RefreshToken.auth.RefreshTokenRequest.auth.RefreshTokenResponseE
+ValidateUser.auth.ValidateUserRequest.auth.ValidateUserResponse>
+IsUserExist.auth.UserExistRequest.auth.UserExistResponse3
+Logout.auth.LogoutRequest.auth.LogoutResponse<
+	RoleCheck.auth.RoleCheckRequest.auth.RoleCheckResponseB
+RevokeToken.auth.RevokeTokenRequest.auth.RevokeTokenResponseK
+ChangePassword.auth.ChangePasswordRequest.auth.ChangePasswordResponseN
+UpdateUserRoles.auth.UpdateUserRolesRequest.auth.UpdateUserRolesResponseT
+UpdateUserProfile.auth.UpdateUserProfileRequest.auth.UpdateUserProfileResponseB8
+$com.iammahbubalam.cpAuthService.grpcBAuthServiceProtobproto3
