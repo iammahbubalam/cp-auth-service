@@ -18,7 +18,7 @@ ext {
     grpcVersion = '1.64.0'
     jjwtVersion = '0.12.5'
     auth0JwtVersion = '4.4.0'
-    resilience4jVersion = '2.2.0'
+
 }
 
 java {
@@ -66,12 +66,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'com.github.ben-manes.caffeine:caffeine'
 
-    // Resilience / Circuit Breaking
-    implementation "io.github.resilience4j:resilience4j-spring-boot3:${resilience4jVersion}"
-    implementation "io.github.resilience4j:resilience4j-reactor:${resilience4jVersion}"
-    implementation "io.github.resilience4j:resilience4j-circuitbreaker:${resilience4jVersion}"
-    implementation "io.github.resilience4j:resilience4j-retry:${resilience4jVersion}"
-    implementation "io.github.resilience4j:resilience4j-timelimiter:${resilience4jVersion}"
 
     // JWT
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
