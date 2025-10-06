@@ -22,9 +22,11 @@ spring:
       host: localhost
       port: 6379
       password: root
-
-server:
-  port: ${SERVER_PORT:8080}
+grpc:
+  server:
+    port: 9090
+    security:
+      enabled: false
 
 management:
   endpoints:
@@ -51,58 +53,16 @@ info:
     description: Auth service for CP platform (dev)
     version: 0.1.0-dev
 
-resilience4j:
-  circuitbreaker:
-    configs:
-      default:
-        failure-rate-threshold: 50
-        sliding-window-size: 20
-        minimum-number-of-calls: 10
-        wait-duration-in-open-state: 20s
-        permitted-number-of-calls-in-half-open-state: 5
-        ignore-exception-predicate: com.iammahbubalam.cp_auth_service.exception.GrpcRecordableFailurePredicate
-        record-exceptions:
-          - java.io.IOException
-          - java.util.concurrent.TimeoutException
-    instances:
-      cp-user-service:
-        base-config: default
-  retry:
-    configs:
-      default:
-        max-attempts: 3
-        wait-duration: 500ms
-        enable-exponential-backoff: true
-        exponential-backoff-multiplier: 2.0
-        retry-exception-predicate: com.iammahbubalam.cp_auth_service.exception.GrpcRetryableExceptionPredicate
-        retry-exceptions:
-          - java.io.IOException
-          - java.util.concurrent.TimeoutException
-    instances:
-      cp-user-service:
-        base-config: default
-  timelimiter:
-    configs:
-      default:
-        timeout-duration: 4s
-        cancel-running-future: true
-    instances:
-      cp-user-service:
-        base-config: default
-
-
 app:
   jwt:
     token:
       expiration:
-        access: 3600    # 1 hour in seconds
-        refresh: 2592000 # 30 days in seconds
+        access: 3600
+        refresh: 2592000
       issuer: "auth-service"
-
-    # RSA Key Configuration (base64 encoded)
     rsa:
-      private-key-path: "cp-auth-service/private_key.pem"
-      public-key-path: "cp-auth-service/public_key.pem"
+      private-key-path: "keys/private_key.pem"
+      public-key-path: "keys/public_key.pem"
   cache:
     caffeine:
       default-ttl: 300  # 5 minutes
@@ -111,10 +71,3 @@ app:
     redis:
       blacklist-ttl: 86400  # 24 hours
 
-  # Password Policy
-  password:
-    min-length: 8
-    require-uppercase: true
-    require-lowercase: true
-    require-digits: true
-    require-special-chars: false
