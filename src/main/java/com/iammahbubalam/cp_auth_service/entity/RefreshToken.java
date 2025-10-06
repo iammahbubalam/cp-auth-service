@@ -17,14 +17,13 @@ import java.util.UUID;
 @Table("refresh_tokens")
 public class RefreshToken {
     @Id
+    private UUID id;
+
     @Column("token_id")
     private UUID tokenId;
 
     @Column("user_id")
     private UUID userId;
-
-    @Column("token_hash")
-    private String tokenHash;
 
     @Column("expires_at")
     private LocalDateTime expiresAt;
@@ -36,11 +35,9 @@ public class RefreshToken {
     @Column("is_revoked")
     private Boolean isRevoked;
 
-    @Column("device")
-    private String device; // JSON string
 
     @Override
     public String toString() {
-        return "RefreshToken{tokenId=%s, userId=%s, tokenHash='%s', expiresAt=%s, createdAt=%s, isRevoked=%s, deviceInfo='%s'}".formatted(tokenId, userId, tokenHash, expiresAt, createdAt, isRevoked, device);
+        return "RefreshToken{id=%s,tokenId=%s, userId=%s, expiresAt=%s, createdAt=%s, isRevoked=%s'}".formatted(id, tokenId, userId, expiresAt, createdAt, isRevoked);
     }
 }

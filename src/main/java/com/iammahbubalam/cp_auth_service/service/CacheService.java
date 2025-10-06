@@ -1,8 +1,8 @@
 package com.iammahbubalam.cp_auth_service.service;
 
 import com.iammahbubalam.cp_auth_service.dto.UserDto;
-import com.iammahbubalam.cp_auth_service.entity.AuthUser;
 import com.iammahbubalam.cp_auth_service.repository.AuthUserRepository;
+import com.iammahbubalam.cp_auth_service.util.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -48,8 +48,8 @@ public class CacheService {
     }
 
     private Mono<UserDto> loadUserFromDatabase(UUID userId) {
-        return authUserRepository.findById(userId)
-                .map(this::convertToUserDto)
+        // Pass the entire Flux to the mapper
+        return UserMapper.toDtoWithRoles(authUserRepository.findUserWithRolesRaw(userId))
                 .doOnNext(userDto -> log.debug("Loaded user context from database: {}", userId))
                 .onErrorResume(error -> {
                     log.error("Failed to load user from database: {}", userId, error);
@@ -57,17 +57,6 @@ public class CacheService {
                 });
     }
 
-    private UserDto convertToUserDto(AuthUser authUser) {
-        return UserDto.builder()
-                .userId(authUser.getId())
-                .username(authUser.getUsername())
-                .email(authUser.getEmail())
-                .firstName(authUser.getFirstName())
-                .lastName(authUser.getLastName())
-                .isActive(authUser.isActive())
-                .build();
-
-    }
 
     public Mono<Void> cacheUserDto(UUID userId, UserDto userDto) {
         String key = USER_CACHE_PREFIX + userId.toString();

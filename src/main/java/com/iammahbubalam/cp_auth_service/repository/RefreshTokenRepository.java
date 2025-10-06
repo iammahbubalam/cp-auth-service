@@ -4,12 +4,14 @@ import com.iammahbubalam.cp_auth_service.entity.RefreshToken;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Repository
 public interface RefreshTokenRepository extends R2dbcRepository<RefreshToken, UUID> {
 
     /**
@@ -53,4 +55,6 @@ public interface RefreshTokenRepository extends R2dbcRepository<RefreshToken, UU
      */
     @Query("SELECT * FROM refresh_tokens WHERE token_hash = :tokenHash")
     Mono<RefreshToken> findByTokenHashIncludingRevoked(@Param("tokenHash") String tokenHash);
+
+    Mono<RefreshToken> findByTokenId(UUID tokenId);
 }

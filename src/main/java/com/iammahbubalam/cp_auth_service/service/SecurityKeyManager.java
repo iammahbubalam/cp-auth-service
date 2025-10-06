@@ -1,12 +1,13 @@
 package com.iammahbubalam.cp_auth_service.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -17,6 +18,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 @Service
+@Slf4j
 public class SecurityKeyManager {
 
     @Value("${app.jwt.rsa.private-key-path}")
@@ -27,8 +29,10 @@ public class SecurityKeyManager {
 
     @Cacheable(value = "publicKeyCache", key = "'rsa-public-key'")
     public PublicKey getPublicKey() {
+        log.info("Loading public key from: {}", publicKeyPath);
         try {
-            String publicKeyContent = new String(Files.readAllBytes(Paths.get(publicKeyPath)))
+            ClassPathResource resource = new ClassPathResource(publicKeyPath);
+            String publicKeyContent = new String(Files.readAllBytes(resource.getFile().toPath()))
                     .replace("-----BEGIN PUBLIC KEY-----", "")
                     .replace("-----END PUBLIC KEY-----", "")
                     .replaceAll("\\s", "");
@@ -39,14 +43,17 @@ public class SecurityKeyManager {
 
             return keyFactory.generatePublic(spec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.error("Failed to load public key from: {}", publicKeyPath, e);
             throw new RuntimeException("Failed to load RSA public key", e);
         }
     }
 
     @Cacheable(value = "publicKeyCache", key = "'rsa-private-key'")
     public PrivateKey getPrivateKey() {
+        log.info("Loading private key from: {}", privateKeyPath);
         try {
-            String privateKeyContent = new String(Files.readAllBytes(Paths.get(privateKeyPath)))
+            ClassPathResource resource = new ClassPathResource(privateKeyPath);
+            String privateKeyContent = new String(Files.readAllBytes(resource.getFile().toPath()))
                     .replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s", "");
@@ -57,6 +64,7 @@ public class SecurityKeyManager {
 
             return keyFactory.generatePrivate(spec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.error("Failed to load private key from: {}", privateKeyPath, e);
             throw new RuntimeException("Failed to load RSA private key", e);
         }
     }

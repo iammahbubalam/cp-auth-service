@@ -12,8 +12,9 @@ public class PasswordValidator {
     public static final int MAX_LENGTH = 128;
 
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%%*?&])[A-Za-z\\\\d@$!%%*?&]{%d,%d}$".formatted(MIN_LENGTH, MAX_LENGTH)
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%%*?&])[A-Za-z\\d@$!%%*?&]{%d,%d}$".formatted(MIN_LENGTH, MAX_LENGTH)
     );
+
 
     public boolean isValid(String password) {
         if (password == null || password.length() < MIN_LENGTH || password.length() > MAX_LENGTH) {
