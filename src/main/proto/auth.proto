@@ -175,6 +175,4 @@ message UserInfo {
   string last_name = 5;
   repeated string roles = 6;
   bool is_active = 7;
-  int64 created_at = 8;
-  int64 last_login_at = 9;
 }
