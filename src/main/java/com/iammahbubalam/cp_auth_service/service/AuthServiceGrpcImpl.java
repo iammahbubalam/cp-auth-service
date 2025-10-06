@@ -1,5 +1,4 @@
 package com.iammahbubalam.cp_auth_service.service;
-
 import com.iammahbubalam.cpAuthService.grpc.AuthServiceGrpc;
 import com.iammahbubalam.cpAuthService.grpc.AuthServiceProto;
 import com.iammahbubalam.cp_auth_service.entity.UserRole;
@@ -26,7 +25,6 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final AuthService authService;
-
 
     @Override
     public void register(AuthServiceProto.RegisterRequest request, StreamObserver<AuthServiceProto.RegisterResponse> responseObserver) {
