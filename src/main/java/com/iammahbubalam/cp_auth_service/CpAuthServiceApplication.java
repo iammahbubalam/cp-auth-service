@@ -12,9 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @SpringBootApplication
 public class CpAuthServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(CpAuthServiceApplication.class, args);
     }
-
 }

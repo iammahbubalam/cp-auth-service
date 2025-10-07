@@ -10,6 +10,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // 12 rounds for strong security
+        return new BCryptPasswordEncoder(12);
     }
 }

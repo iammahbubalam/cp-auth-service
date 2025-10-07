@@ -28,6 +28,7 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Override
     public void register(AuthServiceProto.RegisterRequest request, StreamObserver<AuthServiceProto.RegisterResponse> responseObserver) {
+
         log.info("Registration attempt for email: {}", request.getEmail());
         authService.validateRegistrationRequest(request)
                 .flatMap(authService::checkUserExistence)
